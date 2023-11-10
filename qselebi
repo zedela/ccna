@@ -90,6 +90,199 @@ eigrp router-id 3.3.3.3
 
 //show ip protocols
 // show ip eigrp neighbours
+_______________________________________________
+_______________________________________________
+_______________________________________________
+
+en 
+conf t
+ho S1
+
+banner motd # Authenticated Users Only #
+enable secret btu2021 //privilegged mode
+
+line console 
+password btucon2021
+login
+//secure console connection
+
+
+vlan 110
+name Students
+vlan 120
+name Staff
+vlan 130
+name Others
+vlan 140
+name Management
+vlan 150
+name Native
+vlan 160
+name Unused
+
+int fa0/2
+swi mod acc
+swi acc vlan 120
+
+int fa0/3
+swi mod acc
+swi acc vlan 110
+
+int fa0/5
+swi mod acc
+swi acc vlan 130
+
+show vlan brief
+
+int ra fa0/6-24
+swi acc vlan 160
+shutdown
+int ra gi0/1-2
+swi acc vlan 160
+shutdown
+
+int fa0/4
+swi mod trunk
+swi trunk native vlan 160
+_____________________________________________
+
+en 
+conf t
+ho S2
+
+banner motd # Authenticated Users Only #
+enable secret btu2021
+
+vlan 110
+name Students
+vlan 120
+name Staff
+vlan 130
+name Others
+vlan 140
+name Management
+vlan 150
+name Native
+vlan 160
+name Unused
+
+
+int fa0/3
+swi mod acc
+swi acc vlan 140
+
+int fa0/4
+swi mod acc
+swi acc vlan 120
+
+int ra fa0/1-2
+swi acc vlan 160
+shutdown
+int ra fa0/6-24
+swi acc vlan 160
+shutdown
+int ra gi0/1-2
+swi acc vlan 160
+shutdown
+
+int fa0/5
+swi mod trunk
+swi trunk native vlan 160
+
+____________________________________________
+
+L3_S1
+
+en
+conf t
+ho L3_S1
+
+vlan 200
+name Staff
+vlan 210
+name Guests
+vlan 220
+name Management/Native
+vlan 230
+name Unused
+
+int fa0/2
+swi mod acc
+swi acc vlan 200
+
+int fa0/3
+swi mod acc
+swi acc vlan 210
+
+int fa0/4
+swi mod acc
+swi acc vlan 220
+
+int fa0/5
+swi mod acc
+swi acc vlan 200
+
+int fa0/1
+swi acc vlan 230
+shutdown
+int ra fa0/6-24
+swi acc vlan 230
+shutdown
+int gi0/2
+swi acc vlan 230
+shutdown
+____________________________________________
+
+R1
+
+en
+conf t
+ho R1
+
+banner motd # Authenticated Users Only #
+enable secret btu2021 //priviligirebuli rejimi
+
+line console 0 //console secure connection
+password btucon2021
+login
+ 
+int gi0/0
+no shutdown
+exit
+
+int gi0/0.110
+enc dot1q 110
+description vlan 110 subint
+
+int gi0/0.120
+enc dot1q 120
+description vlan 120 subint
+
+int gi0/0.130
+enc dot1q 130
+description vlan 130 subint
+
+int gi0/0.140
+enc dot1q 140
+description vlan 140 subint
+
+int gi0/0.150
+enc dot1q 150 native
+description vlan 150 subint
+
+int gi0/0.160
+enc dot1q 160
+description vlan 160 subint
+
+
+ip domain-name btu.ge
+crypto key generate rsa
+2048
+ip ssh vers 2
+username btu secret ssh2021
+line vty 0 15
+transport input ssh
+login local
 
 
 
